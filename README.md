@@ -6,7 +6,7 @@ Converts Markdown file(s) to the Anki cards.
   - [Requirements](#requirements)
   - [Install](#install)
   - [Usage](#usage)
-  - [Overriding default settings](#overriding-default-settings)
+  - [Custom template](#custom-template)
   - [Supported files](#supported-files)
   - [Cards](#cards)
   - [Tags](#tags)
@@ -15,16 +15,15 @@ Converts Markdown file(s) to the Anki cards.
   - [Images](#images)
   - [LaTeX](#latex)
   - [Memory limit](#memory-limit)
-  - [License](#license)
-  - [Changelog](#changelog)
 
 ## Requirements
 
-Node.js v10.0+
+- Node.js v20+ (ESM-only)
+- pnpm (preferred package manager)
 
 ## Install
 ```bash
-npm install -g mdanki
+pnpm install -g @shbernal/mdanki
 ```
 
 ## Usage
@@ -33,6 +32,12 @@ Convert a single markdown file:
 
 ```bash
 mdanki library.md anki.apkg
+```
+
+Convert a single markdown file and let MDAnki pick the output path (current directory with `.apkg` extension):
+
+```bash
+mdanki library.md
 ```
 
 Convert files from directory recursively:
@@ -44,34 +49,36 @@ mdanki ./documents/library ./documents/anki.apkg
 Using all available options:
 
 ```bash
-mdanki library.md anki.apkg --deck Library --config config.json
+mdanki library.md anki.apkg --deck Library --template ~/.config/mdanki/template
+```
+
+Run without downloading remote assets (offline-friendly) or adjust the remote fetch timeout:
+
+```bash
+mdanki library.md --no-remote-media
+mdanki library.md --remote-timeout 15000
 ```
 
 Import just generated `.apkg` file to Anki ("File" - "Import").
 
-## Overriding default settings
+## Custom template
 
-To override [default settings](./src/configs/settings.js) use `--config` option:
+To override the default card template ([defaults live here](./src/configs/settings.ts)) use the `--template` option and point to a directory containing these files (names are fixed):
+
+```
+your-template/
+  front.html
+  back.html
+  style.css
+```
+
+For example:
 
 ```bash
-mdanki library.md anki.apkg --config faworite-settings.json
+mdanki library.md anki.apkg --template ~/.config/mdanki/template
 ```
 
-The JSON file, for example, would look like the following if you were to change
-the mdanki card template to the default that Anki has:
-
-```json
-{
-"template": {
-    "formats": {
-        "question": "{{Front}}",
-        "answer"  : "{{FrontSide}}\n\n<hr id=\"answer\">\n\n{{Back}}",
-         "css"     : ".card {\n font-family: arial;\n font-size: 20px;\n text-align: center;\n color: black;\n background-color: white;\n}"
-               }
-            }
-}
-```
-
+The contents of `front.html`, `back.html`, and `style.css` are used as the question, answer, and CSS respectively. If the directory or any file is missing, MDAnki falls back to the built-in defaults.
 
 ## Supported files
 
@@ -149,7 +156,7 @@ echo "Hello, World!"
 ```
 </pre>
 
-The last code block will be treated by MDAnki as Bash code. The default language can be configured by specifying `--config` with an appropriate **defaultLanguage** [setting](../src/configs/settings.js).
+The last code block will be treated by MDAnki as Bash code. The default language is `bash` (see `src/configs/settings.ts`).
 
 **Note!** Creating a block without language name is not fully supported and should be eliminated in usage. Take a look at this:
 ```bash
@@ -199,10 +206,3 @@ cp node_modules/sql.js/js/sql-memory-growth.js node_modules/sql.js/js/sql.js
 ```
 
 More info [here](https://github.com/sql-js/sql.js#versions-of-sqljs-included-in-the-distributed-artifacts).
-
-## License
-MIT License, Copyright (c) 2020, Oleksandr Shlinchak.
-
-## Changelog
-[Changelog](./CHANGELOG.md)
-

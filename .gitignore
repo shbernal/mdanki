@@ -1,6 +1,6 @@
 *.apkg
-.vscode
 node_modules
-tmp
-.DS_Store
-coverage
+dist
+
+
+
