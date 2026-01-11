@@ -61,6 +61,74 @@ mdanki library.md --remote-timeout 15000
 
 Import just generated `.apkg` file to Anki ("File" - "Import").
 
+## Programmatic API
+
+Install as a dependency and use the transformer directly:
+
+```bash
+pnpm add @shbernal/mdanki
+```
+
+### One-call helper
+
+```ts
+import { convertMarkdownToAnkiDeck } from '@shbernal/mdanki';
+
+const target = await convertMarkdownToAnkiDeck('./notes.md', {
+  // target: './notes.apkg', // optional; inferred when source is a file
+  deckName: 'My Deck',
+  allowRemoteMedia: true,
+});
+```
+
+### Quickstart
+
+```ts
+// ESM only (Node 20+)
+import { Transformer, resolveTargetPath } from '@shbernal/mdanki';
+
+const source = './notes.md';
+const target = await resolveTargetPath(source);
+
+const transformer = new Transformer(source, target, {
+  deckName: 'My Deck',
+  templatePath: undefined, // set this to override the default cards
+  allowRemoteMedia: true,
+  remoteFetchTimeoutMs: 15_000,
+});
+
+await transformer.transform();
+```
+
+### What to pass
+
+- `source`: a file (`.md` or `.markdown`) or a directory to recurse through
+- `target`: absolute path to the `.apkg` to write; use `resolveTargetPath` to pick `./<source>.apkg` automatically for single files (directories must supply one)
+- `deckName`: overrides the top-level `#` heading and default name from settings
+- `templatePath`: directory containing `front.html`, `back.html`, `style.css` if you want a custom template
+- `allowRemoteMedia`: fetch and embed remote images/assets found in markdown
+- `remoteFetchTimeoutMs`: timeout (ms) for remote fetches
+
+### Common patterns
+
+Convert an entire folder of markdown files into one deck:
+
+```ts
+const transformer = new Transformer('./notes', '/abs/path/to/notes.apkg');
+await transformer.transform();
+```
+
+Use a custom template:
+
+```ts
+const transformer = new Transformer('notes.md', 'notes.apkg', {
+  templatePath: '/home/user/.config/mdanki/template',
+});
+await transformer.transform();
+```
+
+Helpers such as `resolveTargetPath` and configuration utilities are exported from the package root. The CLI remains available via the `mdanki` binary for global installs.
+
 ## Custom template
 
 To override the default card template ([defaults live here](./src/configs/settings.ts)) use the `--template` option and point to a directory containing these files (names are fixed):

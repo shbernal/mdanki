@@ -10,8 +10,16 @@
   "packageManager": "pnpm@10.27.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./cli": "./dist/bin.js",
+    "./package.json": "./package.json"
+  },
   "bin": {
-    "mdanki": "./dist/index.js"
+    "mdanki": "./dist/bin.js"
   },
   "files": [
     "dist",
@@ -44,7 +52,7 @@
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "@types/node": "^25.0.3",
+    "@types/node": "^25.0.6",
     "@types/prismjs": "^1.26.5",
     "@types/sql.js": "^1.4.9",
     "@types/yargs": "^17.0.35",

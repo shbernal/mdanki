@@ -1,70 +1,34 @@
-#!/usr/bin/env node
-import path from 'node:path';
-import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
+import { resolveTargetPath, TARGET_REQUIRED_MESSAGE } from './cli.js';
+import { loadConfigs, type Config } from './configs/index.js';
+import Transformer, { type TransformerOptions } from './transformer.js';
 
-import { resolveTargetPath } from './cli.js';
-import Transformer from './transformer.js';
+export { Transformer, resolveTargetPath, TARGET_REQUIRED_MESSAGE, loadConfigs };
+export type { TransformerOptions, Config };
 
-const cli = yargs(hideBin(process.argv))
-  .scriptName('mdanki')
-  .command(
-    '$0 <source> [target]',
-    "Convert Markdown file into anki's apkg file for importing.",
-    (command) =>
-      command
-        .positional('source', {
-          describe: 'Path to a markdown file or directory',
-          type: 'string',
-        })
-        .positional('target', {
-          describe: 'Path to the resulting .apkg file. When omitted, the file stem is used with .apkg in the current directory.',
-          type: 'string',
-        }),
-    async (argv) => {
-      const deckArg = typeof argv.deck === 'string' ? argv.deck : undefined;
-      const templateArg = typeof argv.template === 'string' ? argv.template : undefined;
-      const allowRemoteMedia = argv.remoteMedia !== false;
-      const remoteFetchTimeoutMs =
-        typeof argv.remoteTimeout === 'number' ? argv.remoteTimeout : undefined;
-      const sourcePath = path.resolve(String(argv.source));
+export interface ConvertMarkdownToAnkiDeckOptions extends TransformerOptions {
+  /**
+   * Absolute or relative output path to the .apkg file.
+   * If omitted and the source is a file, the target will be derived from the source name.
+   */
+  target?: string;
+  /**
+   * Working directory used when resolving the target path (defaults to process.cwd()).
+   */
+  cwd?: string;
+}
 
-      try {
-        const targetPath = await resolveTargetPath(sourcePath, argv.target);
-        const transformer = new Transformer(sourcePath, targetPath, {
-          deckName: deckArg ?? null,
-          templatePath: templateArg ? path.resolve(templateArg) : undefined,
-          allowRemoteMedia,
-          remoteFetchTimeoutMs,
-        });
+/**
+  * Convenience helper to convert markdown to an Anki deck in one call.
+  */
+export async function convertMarkdownToAnkiDeck(
+  sourcePath: string,
+  options: ConvertMarkdownToAnkiDeckOptions = {},
+): Promise<string> {
+  const { target: rawTarget, cwd, ...transformerOptions } = options;
+  const target = await resolveTargetPath(sourcePath, rawTarget, cwd);
 
-        await transformer.transform();
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        console.log(errorMessage);
-        process.exit(1);
-      }
-    },
-  )
-  .example('$0 study.md anki.apkg --deck Study', 'Convert a single markdown file')
-  .option('template', {
-    type: 'string',
-    description: 'Template directory containing front.html, back.html and style.css',
-  })
-  .option('deck', {
-    type: 'string',
-    description: 'Deck name',
-  })
-  .option('remote-media', {
-    type: 'boolean',
-    default: true,
-    description: 'Download media from remote http/https sources referenced in markdown',
-  })
-  .option('remote-timeout', {
-    type: 'number',
-    description: 'Timeout in ms when downloading remote media (default: 10000)',
-  })
-  .help()
-  .strict();
+  const transformer = new Transformer(sourcePath, target, transformerOptions);
+  await transformer.transform();
 
-await cli.parseAsync();
+  return target;
+}
