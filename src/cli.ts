@@ -1,15 +1,16 @@
-import type { Stats } from 'node:fs';
-import { lstat } from 'node:fs/promises';
-import path from 'node:path';
+import type { Stats } from "node:fs";
+import { lstat } from "node:fs/promises";
+import path from "node:path";
 
-export const TARGET_REQUIRED_MESSAGE = 'Target path is required when source is a directory';
+export const TARGET_REQUIRED_MESSAGE =
+  "Target path is required when source is a directory";
 
 export async function resolveTargetPath(
   sourcePath: string,
   rawTarget?: unknown,
   cwd: string = process.cwd(),
 ): Promise<string> {
-  if (typeof rawTarget === 'string' && rawTarget.length > 0) {
+  if (typeof rawTarget === "string" && rawTarget.length > 0) {
     return path.resolve(cwd, rawTarget);
   }
 

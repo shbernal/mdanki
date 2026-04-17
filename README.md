@@ -22,6 +22,7 @@ Converts Markdown file(s) to the Anki cards.
 - pnpm (preferred package manager)
 
 ## Install
+
 ```bash
 pnpm install -g @shbernal/mdanki
 ```
@@ -72,11 +73,11 @@ pnpm add @shbernal/mdanki
 ### One-call helper
 
 ```ts
-import { convertMarkdownToAnkiDeck } from '@shbernal/mdanki';
+import { convertMarkdownToAnkiDeck } from "@shbernal/mdanki";
 
-const target = await convertMarkdownToAnkiDeck('./notes.md', {
+const target = await convertMarkdownToAnkiDeck("./notes.md", {
   // target: './notes.apkg', // optional; inferred when source is a file
-  deckName: 'My Deck',
+  deckName: "My Deck",
   allowRemoteMedia: true,
 });
 ```
@@ -85,13 +86,13 @@ const target = await convertMarkdownToAnkiDeck('./notes.md', {
 
 ```ts
 // ESM only (Node 20+)
-import { Transformer, resolveTargetPath } from '@shbernal/mdanki';
+import { Transformer, resolveTargetPath } from "@shbernal/mdanki";
 
-const source = './notes.md';
+const source = "./notes.md";
 const target = await resolveTargetPath(source);
 
 const transformer = new Transformer(source, target, {
-  deckName: 'My Deck',
+  deckName: "My Deck",
   templatePath: undefined, // set this to override the default cards
   allowRemoteMedia: true,
   remoteFetchTimeoutMs: 15_000,
@@ -114,15 +115,15 @@ await transformer.transform();
 Convert an entire folder of markdown files into one deck:
 
 ```ts
-const transformer = new Transformer('./notes', '/abs/path/to/notes.apkg');
+const transformer = new Transformer("./notes", "/abs/path/to/notes.apkg");
 await transformer.transform();
 ```
 
 Use a custom template:
 
 ```ts
-const transformer = new Transformer('notes.md', 'notes.apkg', {
-  templatePath: '/home/user/.config/mdanki/template',
+const transformer = new Transformer("notes.md", "notes.apkg", {
+  templatePath: "/home/user/.config/mdanki/template",
 });
 await transformer.transform();
 ```
@@ -190,10 +191,11 @@ When parsing only one markdown file, the title of the deck could be generated ba
 ## Tags
 
 Cards can have tags in their markdown sources. For adding tags to cart it should follow some rules:
-* tags start from a new line
-* only one line with tags per card
-* a tag should be written in the link format
-* tag (link text) should start from `#` symbol
+
+- tags start from a new line
+- only one line with tags per card
+- a tag should be written in the link format
+- tag (link text) should start from `#` symbol
 
 MDAnki uses `'^\\[#(.*)\\]'` pattern for searching tags. This pattern could be overwritten by specifying custom settings. The source file in the tag link is optional.
 
@@ -227,9 +229,11 @@ echo "Hello, World!"
 The last code block will be treated by MDAnki as Bash code. The default language is `bash` (see `src/configs/settings.ts`).
 
 **Note!** Creating a block without language name is not fully supported and should be eliminated in usage. Take a look at this:
+
 ```bash
 echo "Code block with language name"
 ```
+
 ```
 echo "Code block without language name"
 ```
@@ -240,16 +244,15 @@ MDAnki supports code highlighting for these languages:
 
 > actionscript, applescript, aspnet, bash, basic, batch, c, coffeescript, cpp, csharp, d, dart, erlang, fsharp, go, graphql, groovy, handlebars, java, json, latex, less, livescript, lua, makefile, markdown, markup-templating, nginx, objectivec, pascal, perl, php, powershell, python, r, ruby, rust, sass, scheme, smalltalk, smarty, sql, stylus, swift, typescript, vim, yaml.
 
-
 ## Images
 
 You can use links to image files inside markdown, MDAnki will parse them and add those images to the import collection. It's allowed to use two styles for writing images:
 
 1. Inline:
-![alt text](samples/resources/nodejs.png "Node.js")
+   ![alt text](samples/resources/nodejs.png "Node.js")
 
 1. Reference:
-![alt text][ROR]
+   ![alt text][ROR]
 
 [ROR]: samples/resources/ruby_on_rails.png "Logo Title Text 2"
 
@@ -265,7 +268,7 @@ MDAnki and Anki can support LaTeX. Install LaTeX for your OS and use the `[latex
 
 Converting a big Markdown file you can get a memory limit error like this:
 
-> Cannot enlarge memory arrays. Either (1) compile with  -s TOTAL_MEMORY=X  with X higher than the current value 16777216...
+> Cannot enlarge memory arrays. Either (1) compile with -s TOTAL_MEMORY=X with X higher than the current value 16777216...
 
 For overcoming this error, replace `sql.js`:
 

@@ -1,9 +1,9 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import fs from "node:fs/promises";
+import path from "node:path";
 
-import { BaseParser } from './base_parser.js';
-import Media from '../models/media.js';
-import { getExtensionFromUrl, replaceAsync } from '../utils.js';
+import { BaseParser } from "./base_parser.js";
+import Media from "../models/media.js";
+import { getExtensionFromUrl, replaceAsync } from "../utils.js";
 
 const DEFAULT_REMOTE_FETCH_TIMEOUT_MS = 10_000;
 
@@ -13,12 +13,16 @@ export interface MediaParserOptions {
   [key: string]: unknown;
 }
 
-export class MediaParser extends BaseParser<string, MediaParserOptions, string> {
+export class MediaParser extends BaseParser<
+  string,
+  MediaParserOptions,
+  string
+> {
   private source: string;
 
   private mediaList: Media[] = [];
 
-  private srcRe = new RegExp('src="([^"]*?)"', 'g');
+  private srcRe = new RegExp('src="([^"]*?)"', "g");
 
   constructor(source: string, options: MediaParserOptions = {}) {
     super({
@@ -37,7 +41,7 @@ export class MediaParser extends BaseParser<string, MediaParserOptions, string> 
     return replaceAsync(side, this.srcRe, this.replacer.bind(this));
   }
 
-  private async replacer(_match: string, p1 = ''): Promise<string> {
+  private async replacer(_match: string, p1 = ""): Promise<string> {
     const { data, fileExt } = this.isRemoteSource(p1)
       ? await this.fetchRemoteMedia(p1)
       : await this.readLocalMedia(p1);
@@ -51,7 +55,9 @@ export class MediaParser extends BaseParser<string, MediaParserOptions, string> 
   }
 
   private addMedia(media: Media) {
-    const hasMedia = this.mediaList.some((item) => item.checksum === media.checksum);
+    const hasMedia = this.mediaList.some(
+      (item) => item.checksum === media.checksum,
+    );
     if (hasMedia) return;
 
     this.mediaList.push(media);
@@ -61,14 +67,17 @@ export class MediaParser extends BaseParser<string, MediaParserOptions, string> 
     return /^https?:\/\//.test(src);
   }
 
-  private async fetchRemoteMedia(src: string): Promise<{ data: Buffer; fileExt: string }> {
+  private async fetchRemoteMedia(
+    src: string,
+  ): Promise<{ data: Buffer; fileExt: string }> {
     if (!this.options.allowRemoteMedia) {
       throw new Error(
         `Remote media fetching is disabled. Remove or download the asset manually: ${src}`,
       );
     }
 
-    const timeoutMs = this.options.remoteFetchTimeoutMs ?? DEFAULT_REMOTE_FETCH_TIMEOUT_MS;
+    const timeoutMs =
+      this.options.remoteFetchTimeoutMs ?? DEFAULT_REMOTE_FETCH_TIMEOUT_MS;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -78,18 +87,26 @@ export class MediaParser extends BaseParser<string, MediaParserOptions, string> 
         throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
       }
       const arrayBuffer = await resp.arrayBuffer();
-      return { data: Buffer.from(arrayBuffer), fileExt: getExtensionFromUrl(src) };
+      return {
+        data: Buffer.from(arrayBuffer),
+        fileExt: getExtensionFromUrl(src),
+      };
     } catch (error) {
-      const isAbortError = error instanceof Error && error.name === 'AbortError';
+      const isAbortError =
+        error instanceof Error && error.name === "AbortError";
       const reason = error instanceof Error ? error.message : String(error);
-      const suffix = isAbortError ? `request timed out after ${timeoutMs}ms` : reason;
+      const suffix = isAbortError
+        ? `request timed out after ${timeoutMs}ms`
+        : reason;
       throw new Error(`Failed to download media from ${src}: ${suffix}`);
     } finally {
       clearTimeout(timeout);
     }
   }
 
-  private async readLocalMedia(src: string): Promise<{ data: Buffer; fileExt: string }> {
+  private async readLocalMedia(
+    src: string,
+  ): Promise<{ data: Buffer; fileExt: string }> {
     const filePath = path.resolve(path.dirname(this.source), src);
     const fileExt = path.extname(filePath);
 

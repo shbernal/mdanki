@@ -1,13 +1,13 @@
 {
   "name": "@shbernal/mdanki",
-  "version": "1.0.0",
+  "version": "1.1.3",
   "description": "Convert markdown files to anki cards",
   "keywords": [
     "anki",
     "markdown"
   ],
   "type": "module",
-  "packageManager": "pnpm@10.27.0",
+  "packageManager": "pnpm@10.33.2",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -27,6 +27,7 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "format": "prettier --list-different . | xargs -r prettier --write",
     "lint": "eslint . --ext .ts --max-warnings 0",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -44,24 +45,25 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@shbernal/anki-apkg-export": "^1.0.0",
+    "@shbernal/anki-apkg-export": "^4.0.4",
     "fast-glob": "^3.3.3",
-    "marked": "^17.0.1",
-    "marked-highlight": "^2.2.3",
+    "marked": "^18.0.2",
+    "marked-highlight": "^2.2.4",
     "prismjs": "^1.30.0",
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "@types/node": "^25.0.6",
-    "@types/prismjs": "^1.26.5",
-    "@types/sql.js": "^1.4.9",
+    "@types/node": "^25.6.0",
+    "@types/prismjs": "^1.26.6",
+    "@types/sql.js": "^1.4.11",
     "@types/yargs": "^17.0.35",
     "eslint": "^9.39.2",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-vitest": "^0.5.4",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.52.0",
-    "vitest": "^4.0.16"
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.58.2",
+    "vitest": "^4.1.5"
   }
 }

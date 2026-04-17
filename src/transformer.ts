@@ -1,19 +1,19 @@
-import fg from 'fast-glob';
-import fsSync from 'node:fs';
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import fg from "fast-glob";
+import fsSync from "node:fs";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-import { loadConfigs, type Config } from './configs/index.js';
-import { FileSerializer } from './file_serializer.js';
-import Deck from './models/deck.js';
-import Media from './models/media.js';
-import type { MediaParserOptions } from './parsers/media_parser.js';
+import { loadConfigs, type Config } from "./configs/index.js";
+import { FileSerializer } from "./file_serializer.js";
+import Deck from "./models/deck.js";
+import Media from "./models/media.js";
+import type { MediaParserOptions } from "./parsers/media_parser.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const AVAILABLE_FILE_EXTENSIONS = ['.md', '.markdown'];
+const AVAILABLE_FILE_EXTENSIONS = [".md", ".markdown"];
 
 export interface TransformerOptions {
   deckName?: string | null;
@@ -35,7 +35,11 @@ class Transformer {
 
   private mediaOptions: MediaParserOptions;
 
-  constructor(sourcePath: string, targetPath: string, options: TransformerOptions = {}) {
+  constructor(
+    sourcePath: string,
+    targetPath: string,
+    options: TransformerOptions = {},
+  ) {
     this.sourcePath = sourcePath;
     this.targetPath = targetPath;
     this.deckName = options.deckName;
@@ -53,37 +57,58 @@ class Transformer {
 
   private async transformToDeck(): Promise<void> {
     let generatedDeckName: string | null = null;
-    const cards: Deck['cards'] = [];
+    const cards: Deck["cards"] = [];
     const media: Media[] = [];
 
     const stat = await fs.lstat(this.sourcePath);
 
     if (stat.isDirectory()) {
-      const allowedExtStr = AVAILABLE_FILE_EXTENSIONS.map((ex) => ex.replace('.', '')).join(',');
-      const files = await fg(`${this.sourcePath.replace(/\\/g, '/')}/**/*.{${allowedExtStr}}`, {
-        dot: false,
-      });
+      const allowedExtStr = AVAILABLE_FILE_EXTENSIONS.map((ex) =>
+        ex.replace(".", ""),
+      ).join(",");
+      const files = await fg(
+        `${this.sourcePath.replace(/\\/g, "/")}/**/*.{${allowedExtStr}}`,
+        {
+          dot: false,
+        },
+      );
 
       for (const file of files) {
-        const fileSerializer = new FileSerializer(file, this.config, this.mediaOptions);
-        const { cards: fileCards, media: fileMedia } = await fileSerializer.transform();
+        const fileSerializer = new FileSerializer(
+          file,
+          this.config,
+          this.mediaOptions,
+        );
+        const { cards: fileCards, media: fileMedia } =
+          await fileSerializer.transform();
         cards.push(...fileCards);
         media.push(...fileMedia);
       }
     } else {
-      const fileSerializer = new FileSerializer(this.sourcePath, this.config, this.mediaOptions);
-      const { deckName, cards: fileCards, media: fileMedia } = await fileSerializer.transform();
+      const fileSerializer = new FileSerializer(
+        this.sourcePath,
+        this.config,
+        this.mediaOptions,
+      );
+      const {
+        deckName,
+        cards: fileCards,
+        media: fileMedia,
+      } = await fileSerializer.transform();
       generatedDeckName = deckName;
       cards.push(...fileCards);
       media.push(...fileMedia);
     }
 
     if (!cards.length) {
-      console.log('No cards found. Check your markdown file(s).');
+      console.log("No cards found. Check your markdown file(s).");
       process.exit(1);
     }
 
-    this.deck = new Deck(this.calculateDeckName(generatedDeckName), this.config);
+    this.deck = new Deck(
+      this.calculateDeckName(generatedDeckName),
+      this.config,
+    );
 
     await this.exportCards(cards, media);
   }
@@ -92,7 +117,10 @@ class Transformer {
     return this.deckName ?? generatedName ?? this.config.deck.defaultName;
   }
 
-  private async exportCards(cards: Deck['cards'], media: Media[]): Promise<void> {
+  private async exportCards(
+    cards: Deck["cards"],
+    media: Media[],
+  ): Promise<void> {
     this.addResourcesToDeck();
     this.addCardsToDeck(cards);
     this.addMediaItemsToDeck(media);
@@ -103,13 +131,33 @@ class Transformer {
   private addResourcesToDeck(): void {
     if (!this.deck) return;
 
-    this.deck.addMedia(this.toMedia('_highlight.js', path.resolve(__dirname, '../resources/highlight.js')));
-    this.deck.addMedia(this.toMedia('_prism.js', path.resolve(__dirname, '../resources/prism.js')));
-    this.deck.addMedia(this.toMedia('_highlight_default.css', path.resolve(__dirname, '../resources/default.css')));
-    this.deck.addMedia(this.toMedia('_highlight_dark.css', path.resolve(__dirname, '../resources/dark.css')));
+    this.deck.addMedia(
+      this.toMedia(
+        "_highlight.js",
+        path.resolve(__dirname, "../resources/highlight.js"),
+      ),
+    );
+    this.deck.addMedia(
+      this.toMedia(
+        "_prism.js",
+        path.resolve(__dirname, "../resources/prism.js"),
+      ),
+    );
+    this.deck.addMedia(
+      this.toMedia(
+        "_highlight_default.css",
+        path.resolve(__dirname, "../resources/default.css"),
+      ),
+    );
+    this.deck.addMedia(
+      this.toMedia(
+        "_highlight_dark.css",
+        path.resolve(__dirname, "../resources/dark.css"),
+      ),
+    );
   }
 
-  private addCardsToDeck(cards: Deck['cards']): void {
+  private addCardsToDeck(cards: Deck["cards"]): void {
     cards.forEach((card) => this.deck?.addCard(card));
   }
 

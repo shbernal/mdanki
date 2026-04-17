@@ -1,4 +1,4 @@
-import { sanitizeString } from '../utils.js';
+import { sanitizeString } from "../utils.js";
 
 class Card {
   front: string;

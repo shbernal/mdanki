@@ -1,6 +1,6 @@
-import { resolveTargetPath, TARGET_REQUIRED_MESSAGE } from './cli.js';
-import { loadConfigs, type Config } from './configs/index.js';
-import Transformer, { type TransformerOptions } from './transformer.js';
+import { resolveTargetPath, TARGET_REQUIRED_MESSAGE } from "./cli.js";
+import { loadConfigs, type Config } from "./configs/index.js";
+import Transformer, { type TransformerOptions } from "./transformer.js";
 
 export { Transformer, resolveTargetPath, TARGET_REQUIRED_MESSAGE, loadConfigs };
 export type { TransformerOptions, Config };
@@ -18,8 +18,8 @@ export interface ConvertMarkdownToAnkiDeckOptions extends TransformerOptions {
 }
 
 /**
-  * Convenience helper to convert markdown to an Anki deck in one call.
-  */
+ * Convenience helper to convert markdown to an Anki deck in one call.
+ */
 export async function convertMarkdownToAnkiDeck(
   sourcePath: string,
   options: ConvertMarkdownToAnkiDeckOptions = {},

@@ -1,6 +1,6 @@
-import type { Config } from '../configs/index.js';
+import type { Config } from "../configs/index.js";
 
-export type TemplateFormats = Config['template']['formats'];
+export type TemplateFormats = Config["template"]["formats"];
 
 class Template {
   questionFormat: string;

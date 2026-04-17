@@ -6,14 +6,16 @@ Recursion in computer science is a method of solving a problem where the solutio
 
 ```js
 function recsum(x) {
-    if (x === 1) {
-        return x;
-    } else {
-        return x + recsum(x - 1);
-    }
+  if (x === 1) {
+    return x;
+  } else {
+    return x + recsum(x - 1);
+  }
 }
 ```
+
 Call stack:
+
 ```bash
 recsum(5)
 5 + recsum(4)
@@ -32,14 +34,16 @@ In computer science, a tail call is a subroutine call performed as the final act
 
 ```js
 function tailrecsum(x, running_total = 0) {
-    if (x === 0) {
-        return running_total;
-    } else {
-        return tailrecsum(x - 1, running_total + x);
-    }
+  if (x === 0) {
+    return running_total;
+  } else {
+    return tailrecsum(x - 1, running_total + x);
+  }
 }
 ```
+
 Call stack:
+
 ```bash
 tailrecsum(5, 0)
 tailrecsum(4, 5)

@@ -1,11 +1,11 @@
-import AnkiExport, { type TemplateOptions } from '@shbernal/anki-apkg-export';
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import AnkiExport, { type TemplateOptions } from "@shbernal/anki-apkg-export";
+import fs from "node:fs/promises";
+import path from "node:path";
 
-import type Card from './card.js';
-import type Media from './media.js';
-import Template from './template.js';
-import type { Config } from '../configs/index.js';
+import type Card from "./card.js";
+import type Media from "./media.js";
+import Template from "./template.js";
+import type { Config } from "../configs/index.js";
 
 class Deck {
   name: string;
@@ -47,7 +47,9 @@ class Deck {
     await this.export(exporter, target);
   }
 
-  private addDataToAnkiExporter(exporter: Awaited<ReturnType<typeof AnkiExport>>): void {
+  private addDataToAnkiExporter(
+    exporter: Awaited<ReturnType<typeof AnkiExport>>,
+  ): void {
     this.cards.forEach((card) => {
       const { front, back, tags } = card;
       exporter.addCard(front, back, { tags });
@@ -60,11 +62,14 @@ class Deck {
     });
   }
 
-  private async export(exporter: Awaited<ReturnType<typeof AnkiExport>>, target: string): Promise<void> {
+  private async export(
+    exporter: Awaited<ReturnType<typeof AnkiExport>>,
+    target: string,
+  ): Promise<void> {
     try {
       const zip = await exporter.save();
       await fs.mkdir(path.dirname(target), { recursive: true });
-      await fs.writeFile(target, zip, 'binary');
+      await fs.writeFile(target, zip, "binary");
       console.log(`The deck "${this.name}" has been generated in ${target}`);
     } catch (error) {
       console.log(error);

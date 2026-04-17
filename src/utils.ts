@@ -1,5 +1,5 @@
 export function sanitizeString(str: string): string {
-  return str.trim().replace(/\s/g, '_');
+  return str.trim().replace(/\s/g, "_");
 }
 
 export function trimArrayStart<T>(array: T[]): T[] {
@@ -35,16 +35,15 @@ export function trimArray<T>(array: T[]): T[] {
 }
 
 export function getExtensionFromUrl(url: string): string {
-  const extension = url
-    .split(/[#?]/)[0]
-    .split('.')
-    .pop()
-    ?.trim();
+  const extension = url.split(/[#?]/)[0].split(".").pop()?.trim();
 
-  return extension ? `.${extension}` : '';
+  return extension ? `.${extension}` : "";
 }
 
-type AsyncReplacer = (match: string, ...args: (string | undefined)[]) => Promise<string>;
+type AsyncReplacer = (
+  match: string,
+  ...args: (string | undefined)[]
+) => Promise<string>;
 
 export async function replaceAsync(
   str: string,
@@ -72,9 +71,12 @@ export async function replaceAsync(
 type PlainObject = Record<string, unknown>;
 
 const isObject = (value: unknown): value is PlainObject =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+  typeof value === "object" && value !== null && !Array.isArray(value);
 
-export function deepMerge<T extends object, S extends object>(base: T, override: S): T & S {
+export function deepMerge<T extends object, S extends object>(
+  base: T,
+  override: S,
+): T & S {
   const result: PlainObject = structuredClone(base) as PlainObject;
 
   Object.entries(override ?? {}).forEach(([key, value]) => {

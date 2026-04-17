@@ -1,7 +1,7 @@
 export interface Settings {
   code: {
     defaultLanguage: string;
-    template: 'default' | 'dark';
+    template: "default" | "dark";
   };
   card: {
     separator: string;
@@ -23,17 +23,17 @@ export interface Settings {
 
 export const settings: Settings = {
   code: {
-    defaultLanguage: 'bash',
-    template: 'dark',
+    defaultLanguage: "bash",
+    template: "dark",
   },
   card: {
-    separator: '(?=^##\\s)',
-    frontBackSeparator: '%',
-    tagPattern: '^\\[#(.*)\\]',
+    separator: "(?=^##\\s)",
+    frontBackSeparator: "%",
+    tagPattern: "^\\[#(.*)\\]",
   },
   deck: {
-    titleSeparator: '^#\\s',
-    defaultName: 'mdanki',
+    titleSeparator: "^#\\s",
+    defaultName: "mdanki",
   },
   template: {
     formats: {

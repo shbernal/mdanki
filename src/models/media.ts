@@ -1,4 +1,4 @@
-import crypto from 'node:crypto';
+import crypto from "node:crypto";
 
 class Media {
   fileName?: string;
@@ -11,7 +11,7 @@ class Media {
   }
 
   get checksum(): string {
-    return crypto.createHash('md5').update(this.data).digest('hex');
+    return crypto.createHash("md5").update(this.data).digest("hex");
   }
 }
 
