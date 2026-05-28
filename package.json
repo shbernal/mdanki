@@ -1,6 +1,6 @@
 {
   "name": "@shbernal/mdanki",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Convert Markdown files to Anki cards.",
   "keywords": [
     "anki",
@@ -10,7 +10,7 @@
     "deck-generation"
   ],
   "type": "module",
-  "packageManager": "pnpm@11.1.2",
+  "packageManager": "pnpm@11.4.0+sha512.f0febc7e37552ab485494a914241b338e0b3580b93d54ce31f00933015880863129038a1b4ae4e414a0ee63ac35bf21197e990172c4a68256450b5636310968f",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -48,25 +48,25 @@
     "node": ">=20"
   },
   "dependencies": {
-    "@shbernal/anki-apkg-export": "^4.0.4",
+    "@shbernal/anki-apkg-export": "^4.0.6",
     "fast-glob": "^3.3.3",
-    "marked": "^18.0.2",
+    "marked": "^18.0.4",
     "marked-highlight": "^2.2.4",
     "prismjs": "^1.30.0",
     "yargs": "^18.0.0"
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
+    "@types/node": "^25.9.1",
     "@types/prismjs": "^1.26.6",
     "@types/sql.js": "^1.4.11",
     "@types/yargs": "^17.0.35",
-    "eslint": "^9.39.2",
+    "@vitest/eslint-plugin": "^1.6.18",
+    "eslint": "^9.39.4",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-vitest": "^0.5.4",
     "prettier": "^3.8.3",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.58.2",
-    "vitest": "^4.1.5"
+    "typescript-eslint": "^8.60.0",
+    "vitest": "^4.1.7"
   }
 }

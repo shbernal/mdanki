@@ -1,6 +1,6 @@
 import { fileURLToPath } from "node:url";
 import importPlugin from "eslint-plugin-import";
-import vitest from "eslint-plugin-vitest";
+import vitest from "@vitest/eslint-plugin";
 import tseslint from "typescript-eslint";
 
 const tsconfigPath = "./tsconfig.eslint.json";

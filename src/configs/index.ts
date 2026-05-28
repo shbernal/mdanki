@@ -56,5 +56,5 @@ const readTemplateSettings = (templatePath?: string): Partial<Settings> => {
 
 export const loadConfigs = (templatePath?: string): Config => {
   const baseConfig: Settings = structuredClone(settings);
-  return deepMerge(baseConfig, readTemplateSettings(templatePath)) as Settings;
+  return deepMerge(baseConfig, readTemplateSettings(templatePath));
 };

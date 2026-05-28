@@ -1,3 +1,7 @@
+minimumReleaseAgeStrict: true
+minimumReleaseAgeExclude:
+  - "@shbernal/*"
+
 allowBuilds:
   esbuild: true
   unrs-resolver: true
