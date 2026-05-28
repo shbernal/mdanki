@@ -1,5 +1,8 @@
 # MDAnki
 
+[![weekly downloads](https://img.shields.io/npm/dw/%40shbernal%2Fmdanki.svg?label=npm%20downloads&logo=npm)](https://www.npmjs.com/package/@shbernal/mdanki)
+[![total downloads](https://img.shields.io/npm/dt/%40shbernal%2Fmdanki.svg?label=npm%20total%20downloads&logo=npm)](https://www.npmjs.com/package/@shbernal/mdanki)
+
 Converts Markdown file(s) to the Anki cards.
 
 - [MDAnki](#mdanki)
