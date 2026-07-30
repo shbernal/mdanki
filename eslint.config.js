@@ -30,7 +30,7 @@ export default tseslint.config(
       "**/*.d.ts",
       "resources/",
       "**/tsconfig*.json",
-      // compiled artifacts tracked next to the real .ts tests
+      // compiled output a stray tsc run can drop next to the .ts tests
       "tests/**/*.js",
     ],
   },
@@ -89,18 +89,11 @@ export default tseslint.config(
           ],
         },
       ],
-      "import/order": [
-        "warn",
-        {
-          groups: [
-            ["builtin", "external"],
-            ["internal"],
-            ["parent", "sibling", "index"],
-          ],
-          "newlines-between": "always",
-          alphabetize: { order: "asc", caseInsensitive: true },
-        },
-      ],
+      // import/order 2.32.0 crashes on ESLint 10: its fixer calls
+      // sourceCode.getTokenOrCommentBefore, removed in ESLint 10. Any
+      // out-of-order import aborts the run instead of reporting. Re-enable
+      // when eslint-plugin-import ships ESLint 10 support.
+      "import/order": "off",
       "class-methods-use-this": "off",
       "no-console": "off",
       "no-await-in-loop": "off",
