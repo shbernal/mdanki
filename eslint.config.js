@@ -1,4 +1,6 @@
 import { fileURLToPath } from "node:url";
+import js from "@eslint/js";
+import globals from "globals";
 import importPlugin from "eslint-plugin-import";
 import vitest from "@vitest/eslint-plugin";
 import tseslint from "typescript-eslint";
@@ -28,7 +30,20 @@ export default tseslint.config(
       "**/*.d.ts",
       "resources/",
       "**/tsconfig*.json",
+      // compiled artifacts tracked next to the real .ts tests
+      "tests/**/*.js",
     ],
+  },
+  {
+    files: ["**/*.{js,mjs,cjs}"],
+    ...js.configs.recommended,
+    languageOptions: {
+      sourceType: "module",
+      ecmaVersion: "latest",
+      globals: {
+        ...globals.node,
+      },
+    },
   },
   ...typeCheckedConfigs,
   ...stylisticConfigs,
