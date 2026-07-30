@@ -10,7 +10,7 @@
     "deck-generation"
   ],
   "type": "module",
-  "packageManager": "pnpm@11.4.0+sha512.f0febc7e37552ab485494a914241b338e0b3580b93d54ce31f00933015880863129038a1b4ae4e414a0ee63ac35bf21197e990172c4a68256450b5636310968f",
+  "packageManager": "pnpm@11.18.0+sha512.33d83c77da82f49fba836925c6f1b841181ec3132b670639bd012f7075f5c7cf634c5f870147c19aae7478fac01df09d8892e880454896edd23ee9b33757563c",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -50,23 +50,23 @@
   "dependencies": {
     "@shbernal/anki-apkg-export": "^4.0.6",
     "fast-glob": "^3.3.3",
-    "marked": "^18.0.4",
+    "marked": "^18.0.7",
     "marked-highlight": "^2.2.4",
     "prismjs": "^1.30.0",
-    "yargs": "^18.0.0"
+    "yargs": "^18.1.0"
   },
   "devDependencies": {
-    "@types/node": "^25.9.1",
+    "@types/node": "^26.1.2",
     "@types/prismjs": "^1.26.6",
     "@types/sql.js": "^1.4.11",
     "@types/yargs": "^17.0.35",
-    "@vitest/eslint-plugin": "^1.6.18",
-    "eslint": "^9.39.4",
-    "eslint-import-resolver-typescript": "^4.4.4",
+    "@vitest/eslint-plugin": "^1.6.24",
+    "eslint": "^10.8.0",
+    "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-import": "^2.32.0",
-    "prettier": "^3.8.3",
+    "prettier": "^3.9.6",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.60.0",
-    "vitest": "^4.1.7"
+    "typescript-eslint": "^8.65.0",
+    "vitest": "^4.1.10"
   }
 }
