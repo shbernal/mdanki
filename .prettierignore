@@ -1,0 +1,17 @@
+dist/
+node_modules/
+coverage/
+
+pnpm-lock.yaml
+
+# vendored runtime assets shipped as-is
+resources/
+
+# test input fixtures: formatting would change what is parsed
+samples/
+
+# compiled artifacts tracked next to the real .ts tests
+tests/**/*.js
+tests/**/*.js.map
+tests/**/*.d.ts
+tests/**/*.d.ts.map
