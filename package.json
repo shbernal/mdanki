@@ -46,7 +46,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "dependencies": {
     "@shbernal/anki-apkg-export": "^4.0.6",
