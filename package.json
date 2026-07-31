@@ -1,6 +1,6 @@
 {
   "name": "@shbernal/mdanki",
-  "version": "1.1.5",
+  "version": "2.0.0",
   "description": "Convert Markdown files to Anki cards.",
   "keywords": [
     "anki",
@@ -34,6 +34,7 @@
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings 0",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "prepare": "pnpm run build"
@@ -46,10 +47,10 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "dependencies": {
-    "@shbernal/anki-apkg-export": "^4.0.6",
+    "@shbernal/anki-apkg-export": "^5.0.0",
     "fast-glob": "^3.3.3",
     "marked": "^18.0.7",
     "marked-highlight": "^2.2.4",
@@ -62,6 +63,7 @@
     "@types/prismjs": "^1.26.6",
     "@types/sql.js": "^1.4.11",
     "@types/yargs": "^17.0.35",
+    "@vitest/coverage-v8": "^4.1.10",
     "@vitest/eslint-plugin": "^1.6.24",
     "eslint": "^10.8.0",
     "eslint-import-resolver-typescript": "^4.4.5",

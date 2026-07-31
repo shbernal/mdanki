@@ -21,7 +21,7 @@ Converts Markdown file(s) to the Anki cards.
 
 ## Requirements
 
-- Node.js v20+ (ESM-only)
+- Node.js v24+ (ESM-only)
 - pnpm (preferred package manager)
 
 ## Install
@@ -88,7 +88,7 @@ const target = await convertMarkdownToAnkiDeck("./notes.md", {
 ### Quickstart
 
 ```ts
-// ESM only (Node 20+)
+// ESM only (Node 24+)
 import { Transformer, resolveTargetPath } from "@shbernal/mdanki";
 
 const source = "./notes.md";

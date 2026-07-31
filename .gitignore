@@ -1,6 +1,13 @@
 *.apkg
 node_modules
 dist
+coverage
+
+# never track compiled output next to the .ts tests
+tests/**/*.js
+tests/**/*.js.map
+tests/**/*.d.ts
+tests/**/*.d.ts.map
 
 .codex
 
