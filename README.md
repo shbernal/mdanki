@@ -5,11 +5,17 @@
 
 Converts Markdown file(s) to the Anki cards.
 
+The markdown it reads is [Flashcard Markdown](https://github.com/shbernal/flashcard-md-spec),
+a specification with a conformance corpus that MDAnki runs in its own test suite. MDAnki
+conforms as a **consumer**: it parses everything the format calls valid, and never
+refuses a file because one card in it is malformed.
+
 - [MDAnki](#mdanki)
   - [Requirements](#requirements)
   - [Install](#install)
   - [Usage](#usage)
   - [Custom template](#custom-template)
+  - [The format](#the-format)
   - [Supported files](#supported-files)
   - [Cards](#cards)
   - [Tags](#tags)
@@ -153,13 +159,25 @@ mdanki library.md anki.apkg --template ~/.config/mdanki/template
 
 The contents of `front.html`, `back.html`, and `style.css` are used as the question, answer, and CSS respectively. If the directory or any file is missing, MDAnki falls back to the built-in defaults.
 
+## The format
+
+MDAnki implements [Flashcard Markdown](https://github.com/shbernal/flashcard-md-spec)
+version 1.0, and nothing beyond it. The grammar is not configurable: the card separator,
+the front/back separator and the tag pattern used to be regexes you could override, which
+is how a tool ends up with a dialect only it can read. They were removed in 4.0.0.
+
+The sections below cover what you write day to day; the specification is the authority on
+everything else, including the cases the two disagree about — those are bugs reported
+against the spec repository.
+
 ## Supported files
 
 MDAnki supports `.md` and `.markdown` files.
 
 ## Cards
 
-By default, MDAnki splits cards by `## ` headline. For example, below markdown will generate 2 cards where headlines will be on the front side and its description - on the back.
+A card is a `## ` heading and everything below it, up to the next heading of level 1 or 2.
+The heading is the front, the body is the back. The markdown below makes two cards.
 
 ```
 ## What's the Markdown?
@@ -175,16 +193,18 @@ Aaron Swartz on the syntax.
 
 ```
 
-If you want to have multiple lines on the card's front side - use `%` symbol for splitting front and back sides:
+Nothing else ends a card. A blank line does not, a `###` heading does not — it is body
+content — and neither does the end of a list.
 
-> **Deprecated.** The next major replaces `%` with a line of exactly `***`. It will not reject a `%` line, it will fold it into the answer, so `mdanki` warns about every file that still uses one. See the [changelog](./CHANGELOG.md).
+To put more than the heading on the front, separate the two sides with a line of exactly
+`***`:
 
 ```
 ## YAGNI
 
 Describe this acronym and why it's so important.
 
-%
+***
 
 "You aren't gonna need it" (YAGNI) is a principle of extreme programming
 (XP) that states a programmer should not add functionality until deemed
@@ -192,30 +212,61 @@ necessary.
 
 ```
 
-When parsing only one markdown file, the title of the deck could be generated based on the top-level headline (`# `).
+Only that exact spelling separates. `---`, `___`, `* * *` and `****` are ordinary
+thematic breaks and stay in the card, as does a `***` inside a fenced code block.
+
+> **Changed in 4.0.0.** `%` used to be the separator and is not recognized any more: a
+> `%` line is body text now. MDAnki warns when it sees one. See the
+> [changelog](./CHANGELOG.md).
+
+When parsing a single markdown file, the deck name comes from the top-level `# ` heading.
+Text between that heading and the first card belongs to no card and is not converted.
 
 ## Tags
 
-> **Deprecated.** The next major replaces the `[#tag]` link form with bare `#tag` tokens. It will not reject a `[#tag]` line, it will render it as visible text in the answer, so `mdanki` warns about every file that still uses one. See the [changelog](./CHANGELOG.md).
+Tags are bare `#tag` tokens, written the way Obsidian writes them: letters and digits,
+`_`, `-`, and `/` to nest, with at least one non-numeric character. A tag is not
+recognized inside a code span or a fenced code block.
 
-Cards can have tags in their markdown sources. For adding tags to cart it should follow some rules:
+A tag counts wherever it appears in the card. Whether it is _rendered_ depends on the
+line it is on:
 
-- tags start from a new line
-- only one line with tags per card
-- a tag should be written in the link format
-- tag (link text) should start from `#` symbol
+- a line that is nothing but tags is metadata — it sets the tags and does not appear on
+  the card
+- a tag inside a sentence sets the tag **and** stays visible, because removing it would
+  turn "The #verbs group of motion" into "The group of motion"
 
-MDAnki uses `'^\\[#(.*)\\]'` pattern for searching tags. This pattern could be overwritten by specifying custom settings. The source file in the tag link is optional.
-
-The below example will generate a card with 3 tags: _algorithms_, _OOP_, and _binary_tree_.
+The card below gets three tags: _algorithms_, _OOP_ and _data-structures_.
 
 ```
 ## Binary tree
 
 In computer science, a binary tree is a tree data structure in which each node has at most two children, which are referred to as the left child and the right child.
 
-[#algorithms](./algorityms.md) [#OOP]() [#binary tree]()
+#algorithms #OOP #data-structures
 ```
+
+Tags can also be set for a whole file, in YAML frontmatter, and the two are unioned:
+
+```
+---
+tags:
+  - computer-science
+  - data-structures
+---
+```
+
+The value has to be a YAML sequence. A scalar (`tags: a, b`) and the singular `tag:` key
+are not read as tags — Obsidian dropped both in 1.9, and reading them here would mean
+your vault and your flashcards disagree about the same file. MDAnki says so rather than
+ignoring them quietly. Any other frontmatter key is yours, and is ignored without
+complaint.
+
+Anki nests tags with `::` where the file nests with `/`; MDAnki translates on export, so
+`#french/grammar` arrives in Anki as `french::grammar`.
+
+> **Changed in 4.0.0.** The `[#tag]()` link form is not recognized any more and renders
+> as visible text in the answer. MDAnki warns when it sees one.
 
 ## Code and syntax highlighting
 

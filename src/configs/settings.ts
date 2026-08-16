@@ -1,15 +1,16 @@
+/*
+ * What is configurable here is presentation. The grammar is not: mdanki implements
+ * Flashcard Markdown, and the card separator, the front/back separator and the tag
+ * pattern used to be regexes a user could override — which is precisely how one
+ * package ends up with a dialect of its own. They were removed in version 4, and
+ * `src/spec/` owns those rules now.
+ */
 export interface Settings {
   code: {
     defaultLanguage: string;
     template: "default" | "dark";
   };
-  card: {
-    separator: string;
-    frontBackSeparator: string;
-    tagPattern: string;
-  };
   deck: {
-    titleSeparator: string;
     defaultName: string;
   };
   template: {
@@ -26,13 +27,7 @@ export const settings: Settings = {
     defaultLanguage: "bash",
     template: "dark",
   },
-  card: {
-    separator: "(?=^##\\s)",
-    frontBackSeparator: "%",
-    tagPattern: "^\\[#(.*)\\]",
-  },
   deck: {
-    titleSeparator: "^#\\s",
     defaultName: "mdanki",
   },
   template: {

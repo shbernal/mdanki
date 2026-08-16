@@ -88,10 +88,10 @@ class Transformer {
           this.config,
           this.mediaOptions,
         );
-        const { cards: fileCards, media: fileMedia } =
-          await fileSerializer.transform();
-        cards.push(...fileCards);
-        media.push(...fileMedia);
+        const parsed = await fileSerializer.transform();
+        this.report(file, parsed);
+        cards.push(...parsed.cards);
+        media.push(...parsed.media);
       }
     } else {
       const fileSerializer = new FileSerializer(
@@ -99,14 +99,11 @@ class Transformer {
         this.config,
         this.mediaOptions,
       );
-      const {
-        deckName,
-        cards: fileCards,
-        media: fileMedia,
-      } = await fileSerializer.transform();
-      generatedDeckName = deckName;
-      cards.push(...fileCards);
-      media.push(...fileMedia);
+      const parsed = await fileSerializer.transform();
+      this.report(this.sourcePath, parsed);
+      generatedDeckName = parsed.deckName;
+      cards.push(...parsed.cards);
+      media.push(...parsed.media);
     }
 
     if (!cards.length) {
@@ -121,6 +118,25 @@ class Transformer {
     );
 
     await this.exportCards(cards, media);
+  }
+
+  /**
+   * Says out loud everything a file gave up on the way in. Nothing here stops the
+   * build: a consumer must never refuse a file over one bad card (§3.1), so the only
+   * remaining obligation is that no loss is silent (§3.3).
+   */
+  private report(
+    file: string,
+    parsed: Awaited<ReturnType<FileSerializer["transform"]>>,
+  ): void {
+    for (const { code, cardIndex, message } of parsed.diagnostics) {
+      const where = cardIndex === null ? "" : ` (card ${cardIndex + 1})`;
+      console.warn(`mdanki: ${file}${where}: ${code}: ${message}`);
+    }
+
+    for (const warning of parsed.warnings) {
+      console.warn(`mdanki: ${file}: ${warning}`);
+    }
   }
 
   private calculateDeckName(generatedName: string | null = null): string {

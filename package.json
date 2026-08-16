@@ -56,10 +56,12 @@
     "marked": "^18.0.7",
     "marked-highlight": "^2.2.4",
     "prismjs": "^1.30.0",
+    "yaml": "^2.9.0",
     "yargs": "^18.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@shbernal/flashcard-md-spec": "github:shbernal/flashcard-md-spec",
     "@types/node": "^26.1.2",
     "@types/prismjs": "^1.26.6",
     "@types/sql.js": "^1.4.11",

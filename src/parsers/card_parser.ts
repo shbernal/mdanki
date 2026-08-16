@@ -1,5 +1,6 @@
 import Card from "../models/card.js";
-import { trimArray } from "../utils.js";
+import type { SpecCard } from "../spec/deck_parser.js";
+import { stripTagOnlyLines } from "../spec/render.js";
 import { BaseParser } from "./base_parser.js";
 import { MdParser } from "./md_parser.js";
 import type { Config } from "../configs/index.js";
@@ -8,15 +9,15 @@ interface CardParserOptions extends Record<string, unknown> {
   convertToHtml?: boolean;
 }
 
-export class CardParser extends BaseParser<
-  string,
-  CardParserOptions,
-  Card | null
-> {
-  private splitRe: RegExp;
-
-  private tagRe: RegExp;
-
+/**
+ * Turns one parsed card into the two HTML fields Anki stores.
+ *
+ * Splitting the document is not this class's job any more — `parseDeck` owns the
+ * grammar, and what arrives here is already a card. What is left is the rendering
+ * decisions: the heading is part of the front (§5.3), and tags-only lines are metadata
+ * that must not reach a field (§6.3).
+ */
+export class CardParser extends BaseParser<SpecCard, CardParserOptions, Card> {
   private mdParser: MdParser;
 
   constructor(
@@ -24,85 +25,29 @@ export class CardParser extends BaseParser<
     options: CardParserOptions = { convertToHtml: true },
   ) {
     super(options);
-    this.splitRe = new RegExp(`^${config.card.frontBackSeparator}$`, "m");
-    this.tagRe = new RegExp(config.card.tagPattern);
     this.mdParser = new MdParser(config, options);
   }
 
-  async parse(string = ""): Promise<Card | null> {
-    const cardLines = string
-      .split(this.splitRe)
-      .map((item) => item.split("\n"))
-      .map((arr) => arr.map((str) => str.trimEnd()));
-
-    if (cardLines.length === 1 && !cardLines[0].filter((line) => line).length) {
-      return null;
-    }
-
-    const { front, back, tags } = this.parseCardLines(cardLines);
+  async parse(card: SpecCard): Promise<Card> {
+    const front = this.toMarkdown([`## ${card.headingText}`, card.frontBody]);
+    const back = this.toMarkdown([card.back]);
 
     if (!this.options.convertToHtml) {
-      return new Card(front.join(), back.join(), tags);
+      return new Card(front, back, card.tags);
     }
 
-    const frontHtml = await this.linesToHtml(front);
-    const backHtml = await this.linesToHtml(back);
+    const [frontHtml, backHtml] = await Promise.all([
+      this.mdParser.parse(front),
+      this.mdParser.parse(back),
+    ]);
 
-    return new Card(frontHtml, backHtml, tags);
+    return new Card(frontHtml, backHtml, card.tags);
   }
 
-  private parseCardLines(cardLines: string[][]) {
-    const front: string[] = [];
-    const back: string[] = [];
-    const tags: string[] = [];
-
-    const fillBackAndTags = (line: string) => {
-      if (this.tagRe.test(line)) {
-        tags.push(...this.parseTags(line));
-        return;
-      }
-
-      if (back.length === 0 && !line) return;
-      back.push(line);
-    };
-
-    if (cardLines.length === 1) {
-      trimArray(cardLines[0]).forEach((line) => {
-        if (front.length === 0) {
-          front.push(line);
-          return;
-        }
-
-        fillBackAndTags(line);
-      });
-    } else {
-      front.push(...cardLines[0]);
-      trimArray(cardLines[1]).forEach((line) => fillBackAndTags(line));
-    }
-
-    return {
-      front: trimArray(front),
-      back: trimArray(back),
-      tags: trimArray(tags),
-    };
-  }
-
-  private parseTags(line: string): string[] {
-    const data = line
-      .split(" ")
-      .map((str) => str.trim())
-      .map((str) => {
-        const parts = this.tagRe.exec(str);
-        this.tagRe.lastIndex = 0;
-        return parts?.[1];
-      })
-      .filter((str): str is string => Boolean(str));
-
-    return data;
-  }
-
-  private async linesToHtml(lines: string[]): Promise<string> {
-    const string = lines.join("\n");
-    return this.mdParser.parse(string);
+  private toMarkdown(parts: string[]): string {
+    return parts
+      .map((part) => stripTagOnlyLines(part))
+      .filter(Boolean)
+      .join("\n\n");
   }
 }

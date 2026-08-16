@@ -6,6 +6,7 @@ import type Card from "./card.js";
 import type Media from "./media.js";
 import Template from "./template.js";
 import type { Config } from "../configs/index.js";
+import { toAnkiTags } from "../spec/tags.js";
 
 export interface DeckOptions {
   /**
@@ -123,7 +124,17 @@ class Deck {
     exporter: Awaited<ReturnType<typeof AnkiExport>>,
   ): void {
     this.cards.forEach((card) => {
-      const { front, back, tags } = card;
+      const { front, back } = card;
+
+      /* §6.5: the file nests tags with `/`, Anki with `::`. This is the export half of
+         that mapping, and with the Anki-to-markdown producer frozen it is the only half
+         anything currently implements. */
+      const { tags, diagnostics } = toAnkiTags(card.tags);
+
+      for (const { code, message } of diagnostics) {
+        console.warn(`mdanki: ${code}: ${message}`);
+      }
+
       exporter.addCard(front, back, { tags });
     });
 

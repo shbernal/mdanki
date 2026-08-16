@@ -43,14 +43,18 @@ describe("MediaParser", () => {
     vi.unstubAllGlobals();
   });
 
-  it("fails fast when remote media fetching is disabled", async () => {
+  it("reports the image rather than downloading it when remote media is disabled", async () => {
     const parser = new MediaParser(path.join(tmpDir, "card.md"), {
       allowRemoteMedia: false,
     });
 
-    await expect(
-      parser.parse('<img src="http://example.com/test.jpg">'),
-    ).rejects.toThrow(/remote media fetching is disabled/i);
+    const html = await parser.parse('<img src="http://example.com/test.jpg">');
+
+    expect(html).toBe('<img src="http://example.com/test.jpg">');
+    expect(parser.media).toHaveLength(0);
+    expect(parser.diagnostics.map(({ code }) => code)).toEqual([
+      "unresolved-image",
+    ]);
   });
 
   it("times out remote downloads", async () => {
@@ -69,20 +73,36 @@ describe("MediaParser", () => {
       remoteFetchTimeoutMs: 5,
     });
 
-    await expect(
-      parser.parse('<img src="http://slow.example.com/test.jpg">'),
-    ).rejects.toThrow(/timed out/i);
+    await parser.parse('<img src="http://slow.example.com/test.jpg">');
+
     expect(abortSpy).toHaveBeenCalled();
+    expect(parser.diagnostics[0].code).toBe("unresolved-image");
+    expect(parser.diagnostics[0].message).toMatch(/timed out/i);
 
     vi.unstubAllGlobals();
   });
 
-  it("wraps local file errors with path context", async () => {
+  /* §7 and §3.1 together: an image that will not resolve is a quality loss, not a
+     reason to refuse the file. The reference survives so the user can see what was
+     meant, and the diagnostic is what keeps the loss from being silent. */
+  it("keeps the reference and reports a local image it cannot read", async () => {
     const parser = new MediaParser(path.join(tmpDir, "card.md"));
     const missing = path.join(tmpDir, "missing.png");
 
-    await expect(parser.parse(`<img src="${missing}">`)).rejects.toThrow(
-      missing,
-    );
+    const html = await parser.parse(`<img src="${missing}">`);
+
+    expect(html).toBe(`<img src="${missing}">`);
+    expect(parser.media).toHaveLength(0);
+    expect(parser.diagnostics).toHaveLength(1);
+    expect(parser.diagnostics[0].code).toBe("unresolved-image");
+    expect(parser.diagnostics[0].message).toContain(missing);
+  });
+
+  it("attributes an unresolved image to the card it was given", async () => {
+    const parser = new MediaParser(path.join(tmpDir, "card.md"));
+
+    await parser.parse(`<img src="${path.join(tmpDir, "missing.png")}">`, 2);
+
+    expect(parser.diagnostics[0].cardIndex).toBe(2);
   });
 });

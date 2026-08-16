@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { BaseParser } from "./base_parser.js";
 import Media from "../models/media.js";
+import { diagnostic, type Diagnostic } from "../spec/diagnostics.js";
 import { getExtensionFromUrl, replaceAsync } from "../utils.js";
 
 const DEFAULT_REMOTE_FETCH_TIMEOUT_MS = 10_000;
@@ -22,6 +23,10 @@ export class MediaParser extends BaseParser<
 
   private mediaList: Media[] = [];
 
+  private diagnosticList: Diagnostic[] = [];
+
+  private cardIndex: number | null = null;
+
   private srcRe = new RegExp('src="([^"]*?)"', "g");
 
   constructor(source: string, options: MediaParserOptions = {}) {
@@ -37,17 +42,50 @@ export class MediaParser extends BaseParser<
     return this.mediaList;
   }
 
-  parse(side: string): Promise<string> {
+  get diagnostics(): Diagnostic[] {
+    return this.diagnosticList;
+  }
+
+  /**
+   * @param cardIndex the card this side belongs to, so that an image which cannot be
+   *   resolved can say which card it was in.
+   */
+  parse(side: string, cardIndex: number | null = null): Promise<string> {
+    this.cardIndex = cardIndex;
     return replaceAsync(side, this.srcRe, this.replacer.bind(this));
   }
 
-  private async replacer(_match: string, p1 = ""): Promise<string> {
-    const { data, fileExt } = this.isRemoteSource(p1)
-      ? await this.fetchRemoteMedia(p1)
-      : await this.readLocalMedia(p1);
+  private async replacer(match: string, p1 = ""): Promise<string> {
+    /* Read synchronously, before the first await: replaceAsync starts every replacement
+       for a side in one pass, so the field is only stable at call time. */
+    const cardIndex = this.cardIndex;
 
-    const media = new Media(data);
-    media.fileName = `${media.checksum}${fileExt}`;
+    let resolved: { data: Buffer; fileExt: string };
+
+    try {
+      resolved = this.isRemoteSource(p1)
+        ? await this.fetchRemoteMedia(p1)
+        : await this.readLocalMedia(p1);
+    } catch (error) {
+      /* An image that will not resolve is a quality loss, not a parse failure (§7), and
+         a consumer may not refuse a whole file over one card (§3.1). So the reference is
+         left as the author wrote it and the loss is named: dropping it in silence is the
+         one thing §3.3 forbids outright. */
+      this.diagnosticList.push(
+        diagnostic(
+          "unresolved-image",
+          `the image "${p1}" could not be resolved (${
+            error instanceof Error ? error.message : String(error)
+          }). It stays in the card as written and is not in the package.`,
+          cardIndex,
+        ),
+      );
+
+      return match;
+    }
+
+    const media = new Media(resolved.data);
+    media.fileName = `${media.checksum}${resolved.fileExt}`;
 
     this.addMedia(media);
 
