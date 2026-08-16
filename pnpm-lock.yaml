@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@shbernal/anki-apkg-export':
-        specifier: ^5.0.0
-        version: 5.0.0
+        specifier: ^5.1.0
+        version: 5.1.0
       fast-glob:
         specifier: ^3.3.3
         version: 3.3.3
@@ -493,8 +493,8 @@ packages:
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
 
-  '@shbernal/anki-apkg-export@5.0.0':
-    resolution: {integrity: sha512-Cn5mkD7jj5QVi3Ze30D1V1svZteJJOhOEAOV1Zi2QXcd9Pgx2y6Tr6lUjxV8W/SZBap0EiWILs35k2obvklRRw==}
+  '@shbernal/anki-apkg-export@5.1.0':
+    resolution: {integrity: sha512-fheBIINWi3DkzHK6diHoMM4qLe0vrfGlWaIZzrWhbiw4umXBgaN2m1p9R/j3LAjN+69btG8tHgIKVlM7D1qohg==}
     engines: {node: '>=24'}
 
   '@standard-schema/spec@1.1.0':
@@ -1707,8 +1707,8 @@ packages:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
 
-  sql.js@1.14.1:
-    resolution: {integrity: sha512-gcj8zBWU5cFsi9WUP+4bFNXAyF1iRpA3LLyS/DP5xlrNzGmPIizUeBggKa8DbDwdqaKwUcTEnChtd2grWo/x/A==}
+  sql.js@1.14.2:
+    resolution: {integrity: sha512-3ZGPovObMFrdw79zrUHbfdE/DLIsy8jdNdssmMSQuRAymedU6q84asPt0kgiqrdMYlPegDItiIMfmIXzZnYFcw==}
 
   stable-hash-x@0.2.0:
     resolution: {integrity: sha512-o3yWv49B/o4QZk5ZcsALc6t0+eCelPc44zZsLtCQnZPDwFpDYSWcDnrv2TtMmMbQ7uKo3J0HTURCqckw23czNQ==}
@@ -2233,10 +2233,10 @@ snapshots:
 
   '@rtsao/scc@1.1.0': {}
 
-  '@shbernal/anki-apkg-export@5.0.0':
+  '@shbernal/anki-apkg-export@5.1.0':
     dependencies:
       fflate: 0.8.3
-      sql.js: 1.14.1
+      sql.js: 1.14.2
 
   '@standard-schema/spec@1.1.0': {}
 
@@ -3623,7 +3623,7 @@ snapshots:
 
   source-map-js@1.2.1: {}
 
-  sql.js@1.14.1: {}
+  sql.js@1.14.2: {}
 
   stable-hash-x@0.2.0: {}
 
