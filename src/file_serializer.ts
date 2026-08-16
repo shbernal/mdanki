@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 
 import type { Config } from "./configs/index.js";
+import { collectDeprecationWarnings } from "./deprecations.js";
 import type Card from "./models/card.js";
 import type Media from "./models/media.js";
 import { CardParser } from "./parsers/card_parser.js";
@@ -34,6 +35,15 @@ export class FileSerializer {
 
   async transform(): Promise<ParsedData> {
     const mdString = await fs.readFile(this.source, "utf8");
+
+    for (const warning of collectDeprecationWarnings(
+      this.source,
+      mdString,
+      this.config,
+    )) {
+      console.warn(`mdanki: ${warning}`);
+    }
+
     return this.splitByCards(mdString);
   }
 

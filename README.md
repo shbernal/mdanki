@@ -112,6 +112,7 @@ await transformer.transform();
 - `templatePath`: directory containing `front.html`, `back.html`, `style.css` if you want a custom template
 - `allowRemoteMedia`: fetch and embed remote images/assets found in markdown
 - `remoteFetchTimeoutMs`: timeout (ms) for remote fetches
+- `now`: epoch milliseconds to build the deck at, defaulting to the current time. Every timestamp in the archive derives from this one reading, so a fixed value makes the output byte-identical across runs
 
 ### Common patterns
 
@@ -176,6 +177,8 @@ Aaron Swartz on the syntax.
 
 If you want to have multiple lines on the card's front side - use `%` symbol for splitting front and back sides:
 
+> **Deprecated.** The next major replaces `%` with a line of exactly `***`. It will not reject a `%` line, it will fold it into the answer, so `mdanki` warns about every file that still uses one. See the [changelog](./CHANGELOG.md).
+
 ```
 ## YAGNI
 
@@ -192,6 +195,8 @@ necessary.
 When parsing only one markdown file, the title of the deck could be generated based on the top-level headline (`# `).
 
 ## Tags
+
+> **Deprecated.** The next major replaces the `[#tag]` link form with bare `#tag` tokens. It will not reject a `[#tag]` line, it will render it as visible text in the answer, so `mdanki` warns about every file that still uses one. See the [changelog](./CHANGELOG.md).
 
 Cards can have tags in their markdown sources. For adding tags to cart it should follow some rules:
 
