@@ -7,6 +7,25 @@ import type Media from "./media.js";
 import Template from "./template.js";
 import type { Config } from "../configs/index.js";
 
+export interface DeckOptions {
+  /**
+   * The epoch-millisecond instant to build the deck at, defaulting to now. Every
+   * timestamp in the archive derives from this one reading, so a fixed value makes
+   * the bytes reproducible across processes.
+   */
+  now?: number;
+}
+
+/** Enough of a front to recognize the card by, with the markup taken back off. */
+const excerpt = (html: string, limit = 60): string => {
+  const text = html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return text.length > limit ? `${text.slice(0, limit - 1)}…` : text;
+};
+
 class Deck {
   name: string;
 
@@ -18,7 +37,7 @@ class Deck {
 
   private exporterPromise: ReturnType<typeof AnkiExport>;
 
-  constructor(name: string, config: Config) {
+  constructor(name: string, config: Config, options: DeckOptions = {}) {
     this.name = name;
     this.cards = [];
     this.mediaCollection = [];
@@ -30,7 +49,11 @@ class Deck {
       css: this.template.css,
     };
 
-    this.exporterPromise = AnkiExport(this.name, templateOptions);
+    this.exporterPromise = AnkiExport(
+      this.name,
+      templateOptions,
+      options.now === undefined ? {} : { now: options.now },
+    );
   }
 
   addCard(card: Card): void {
@@ -43,8 +66,57 @@ class Deck {
 
   async save(target: string): Promise<void> {
     const exporter = await this.exporterPromise;
-    this.addDataToAnkiExporter(exporter);
-    await this.export(exporter, target);
+
+    /* The exporter holds a sql.js database, which is WASM memory no garbage
+       collector reclaims. It also implements Symbol.dispose, so a caller compiling
+       to a newer target can `using` it; this file targets ES2022, where the
+       explicit call is the whole of the adoption. */
+    try {
+      this.warnAboutMergedCards();
+      this.addDataToAnkiExporter(exporter);
+      await this.export(exporter, target);
+    } finally {
+      exporter.close();
+    }
+  }
+
+  /*
+   * Anki matches notes on a guid derived from the deck name and both fields, so two
+   * cards identical in front *and* back are one note however often they appear — the
+   * exporter merges them without comment, and the deck comes out shorter than the
+   * file. Duplicate fronts alone are unaffected: their backs differ, so their guids
+   * do. Nothing here can prevent the merge, because changing how the guid is derived
+   * would re-duplicate every note our users have already imported. So say it instead.
+   */
+  private warnAboutMergedCards(): void {
+    const seen = new Set<string>();
+    const merged: string[] = [];
+
+    for (const { front, back } of this.cards) {
+      /* Joined without a separator on purpose: this has to predict the exporter's
+         guid, and the concatenation is what the guid hashes. */
+      const key = front + back;
+
+      if (seen.has(key)) {
+        merged.push(front);
+        continue;
+      }
+
+      seen.add(key);
+    }
+
+    if (!merged.length) return;
+
+    const shown = merged.slice(0, 3).map((front) => `"${excerpt(front)}"`);
+    const rest = merged.length - shown.length;
+
+    console.warn(
+      `mdanki: ${merged.length} card(s) repeat an earlier card's front and back ` +
+        `exactly, and Anki will keep one note for each pair rather than two: ` +
+        `${shown.join(", ")}${rest > 0 ? ` and ${rest} more` : ""}. ` +
+        `Anki identifies a note by its content, so identical cards cannot be kept ` +
+        `apart; give them different backs if they are meant to be separate.`,
+    );
   }
 
   private addDataToAnkiExporter(

@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 import { loadConfigs, type Config } from "./configs/index.js";
 import { FileSerializer } from "./file_serializer.js";
-import Deck from "./models/deck.js";
+import Deck, { type DeckOptions } from "./models/deck.js";
 import Media from "./models/media.js";
 import type { MediaParserOptions } from "./parsers/media_parser.js";
 
@@ -20,6 +20,12 @@ export interface TransformerOptions {
   templatePath?: string;
   allowRemoteMedia?: boolean;
   remoteFetchTimeoutMs?: number;
+  /**
+   * The epoch-millisecond instant to build the deck at, defaulting to now. Every
+   * timestamp in the archive derives from this one reading, so a fixed value makes
+   * the output byte-identical across runs — for tests and reproducible builds.
+   */
+  now?: number;
 }
 
 class Transformer {
@@ -35,6 +41,8 @@ class Transformer {
 
   private mediaOptions: MediaParserOptions;
 
+  private deckOptions: DeckOptions;
+
   constructor(
     sourcePath: string,
     targetPath: string,
@@ -44,6 +52,7 @@ class Transformer {
     this.targetPath = targetPath;
     this.deckName = options.deckName;
     this.config = loadConfigs(options.templatePath);
+    this.deckOptions = { now: options.now };
     this.mediaOptions = {
       allowRemoteMedia: options.allowRemoteMedia,
       remoteFetchTimeoutMs: options.remoteFetchTimeoutMs,
@@ -108,6 +117,7 @@ class Transformer {
     this.deck = new Deck(
       this.calculateDeckName(generatedDeckName),
       this.config,
+      this.deckOptions,
     );
 
     await this.exportCards(cards, media);
