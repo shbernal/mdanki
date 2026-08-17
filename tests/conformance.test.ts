@@ -22,7 +22,7 @@ import type { DiagnosticCode } from "../src/spec/diagnostics.js";
 
 const require = createRequire(import.meta.url);
 const FIXTURES = path.dirname(
-  require.resolve("@shbernal/flashcard-md-spec/manifest.json"),
+  require.resolve("flashcard-md-spec/manifest.json"),
 );
 
 /** The spec version this suite conforms to, pinned rather than tracked. */

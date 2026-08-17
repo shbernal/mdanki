@@ -33,9 +33,6 @@ importers:
       '@eslint/js':
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.8.0(supports-color@7.2.0))
-      '@shbernal/flashcard-md-spec':
-        specifier: github:shbernal/flashcard-md-spec
-        version: https://codeload.github.com/shbernal/flashcard-md-spec/tar.gz/08f728e2ab3c185f221f38e31819a50eb078b4aa
       '@types/node':
         specifier: ^26.1.2
         version: 26.1.2
@@ -63,6 +60,9 @@ importers:
       eslint-plugin-import:
         specifier: ^2.32.0
         version: 2.32.0(@typescript-eslint/parser@8.65.0(eslint@10.8.0(supports-color@7.2.0))(supports-color@7.2.0)(typescript@6.0.3))(eslint-import-resolver-typescript@4.4.5)(eslint@10.8.0(supports-color@7.2.0))(supports-color@7.2.0)
+      flashcard-md-spec:
+        specifier: github:shbernal/flashcard-md-spec
+        version: https://codeload.github.com/shbernal/flashcard-md-spec/tar.gz/b2a3addc1543abf16dae5f107810a921581c476f
       globals:
         specifier: ^17.8.0
         version: 17.8.0
@@ -501,11 +501,6 @@ packages:
 
   '@shbernal/anki-apkg-export@5.1.0':
     resolution: {integrity: sha512-fheBIINWi3DkzHK6diHoMM4qLe0vrfGlWaIZzrWhbiw4umXBgaN2m1p9R/j3LAjN+69btG8tHgIKVlM7D1qohg==}
-    engines: {node: '>=24'}
-
-  '@shbernal/flashcard-md-spec@https://codeload.github.com/shbernal/flashcard-md-spec/tar.gz/08f728e2ab3c185f221f38e31819a50eb078b4aa':
-    resolution: {gitHosted: true, integrity: sha512-TPctuSCjgLni3W3n3ahsap6e0xlcoAe1fKuKjSM8sqrJWqsC8Cl5j6Lm3joZ1oI4z5pXeH47taY7iYD5ZBtpmw==, tarball: https://codeload.github.com/shbernal/flashcard-md-spec/tar.gz/08f728e2ab3c185f221f38e31819a50eb078b4aa}
-    version: 0.0.1
     engines: {node: '>=24'}
 
   '@standard-schema/spec@1.1.0':
@@ -1137,6 +1132,11 @@ packages:
   find-up@5.0.0:
     resolution: {integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==}
     engines: {node: '>=10'}
+
+  flashcard-md-spec@https://codeload.github.com/shbernal/flashcard-md-spec/tar.gz/b2a3addc1543abf16dae5f107810a921581c476f:
+    resolution: {gitHosted: true, integrity: sha512-NNV3nk8wcKXfBnlv3HuixXV31ufXGXpBGojT91igvc2w/uWU30Zno1xShcIbxUF1W//z4F3TfnXlEoFOe6mqAQ==, tarball: https://codeload.github.com/shbernal/flashcard-md-spec/tar.gz/b2a3addc1543abf16dae5f107810a921581c476f}
+    version: 1.0.0
+    engines: {node: '>=24'}
 
   flat-cache@4.0.1:
     resolution: {integrity: sha512-f7ccFPK3SXFHpx15UIGyRJ/FJQctuKZ0zVuN3frBo4HnK3cay9VEW0R6yPYFHC0AgqhukPzKjq22t5DmAyqGyw==}
@@ -2254,8 +2254,6 @@ snapshots:
       fflate: 0.8.3
       sql.js: 1.14.2
 
-  '@shbernal/flashcard-md-spec@https://codeload.github.com/shbernal/flashcard-md-spec/tar.gz/08f728e2ab3c185f221f38e31819a50eb078b4aa': {}
-
   '@standard-schema/spec@1.1.0': {}
 
   '@tybys/wasm-util@0.10.3':
@@ -3019,6 +3017,8 @@ snapshots:
     dependencies:
       locate-path: 6.0.0
       path-exists: 4.0.0
+
+  flashcard-md-spec@https://codeload.github.com/shbernal/flashcard-md-spec/tar.gz/b2a3addc1543abf16dae5f107810a921581c476f: {}
 
   flat-cache@4.0.1:
     dependencies:
