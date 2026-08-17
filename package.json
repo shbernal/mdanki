@@ -70,7 +70,7 @@
     "eslint": "^10.8.0",
     "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-import": "^2.32.0",
-    "flashcard-md-spec": "github:shbernal/flashcard-md-spec",
+    "flashcard-md-spec": "~1.0.0",
     "globals": "^17.8.0",
     "lefthook": "^2.1.10",
     "prettier": "^3.9.6",
